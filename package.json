@@ -7,7 +7,7 @@
     "copy-files": "mkdir -p ./dist/templates && mkdir -p ./dist/web/extensions/locales && cp -a ./src/templates ./dist && cp -a ./src/web/extensions/locales ./dist/web/extensions",
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "build:prod": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist && npm run copy-files",
-    "build:dev": "tsc --project tsconfig.json && npm run copy-files",
+    "build:dev": "tsc --project tsconfig.json",
     "start:prod": "npm run run-migrations && pm2-runtime dist/index.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/databases/postgresql/config.ts",
     "run-migrations": "npm run typeorm migration:run",

@@ -7,16 +7,16 @@ import { sendEmailWithAttachment } from "../../../../services/emailService";
 import config from "../../../../config";
 
 /**
- * Controlador para obtener el inventario de productos.
- * @param req Request de Express
- * @param res Response de Express
+ * Controller to get the inventory of products.
+ * @param req Express Request
+ * @param res Express Response
  */
 export async function getInventory(req: Request, res: Response): Promise<void> {
   try {
-    // Obtener todos los productos de la base de datos
+    // Get all products from the database
     const products = await ProductRepo.find();
 
-    // Enviar la lista de productos como respuesta
+    // Send the list of products as response
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching inventory:", error);
@@ -24,11 +24,16 @@ export async function getInventory(req: Request, res: Response): Promise<void> {
   }
 }
 
+/**
+ * Controller to create a product.
+ * @param req Express Request
+ * @param res Express Response
+ */
 export async function createProduct(req: Request, res: Response): Promise<void> {
-  const { name, prices, features, nit, code } = req.body;
+  const { name, features, nit, currencies, code } = req.body;
 
   try {
-    if (!name || !prices || !features || !nit || !code) {
+    if (!name || !currencies || !features || !nit || !code) {
       res.status(400).json({ error: "Missing required fields" });
       return;
     }
@@ -44,7 +49,7 @@ export async function createProduct(req: Request, res: Response): Promise<void> 
 
     const product = await ProductRepo.insert({
       name,
-      currencies: prices,
+      currencies,
       enterprise: foundNit,
       productProperties: features,
       productCode: code
@@ -57,6 +62,11 @@ export async function createProduct(req: Request, res: Response): Promise<void> 
   }
 }
 
+/**
+ * Controller to get a product by its ID.
+ * @param req Express Request
+ * @param res Express Response
+ */
 export async function getProductById(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
   try {
@@ -76,6 +86,11 @@ export async function getProductById(req: Request, res: Response): Promise<void>
   }
 }
 
+/**
+ * Controller to delete a product by its ID.
+ * @param req Express Request
+ * @param res Express Response
+ */
 export async function deleteProductById(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
   try {
@@ -99,6 +114,11 @@ export async function deleteProductById(req: Request, res: Response): Promise<vo
   }
 }
 
+/**
+ * Controller to get the inventory of products for a specific enterprise.
+ * @param req Express Request
+ * @param res Express Response
+ */
 export async function getInventoryEnterprise(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
   try {
@@ -114,12 +134,16 @@ export async function getInventoryEnterprise(req: Request, res: Response): Promi
 
     res.status(200).json(enterprise.products);
   } catch (error) {
-    // Si ocurre un error, lo manejamos y respondemos con un estado de error
     console.error("Error fetching inventory:", error);
     res.status(500).json({ error: "Error fetching inventory" });
   }
 }
 
+/**
+ * Controller to update a product.
+ * @param req Express Request
+ * @param res Express Response
+ */
 export async function updateProduct(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
   const { name, prices, features, nit, code } = req.body;
@@ -170,40 +194,41 @@ export async function updateProduct(req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: "Error updating product" });
   }
 }
+
 /**
- * Controlador para generar y descargar el PDF del inventario de productos.
- * @param req Request de Express
- * @param res Response de Express
+ * Controller to generate and download the PDF of the product inventory.
+ * @param req Express Request
+ * @param res Express Response
  */
 export async function generatePDF(req: Request, res: Response): Promise<void> {
   try {
     const { email } = req.body;
 
-    // Obtener todos los productos de la base de datos
+    // Get all products from the database
     const products = await ProductRepo.find();
 
     const fileName = `inventory-${new Date().getTime().toString()}.pdf`;
 
-    // Escribir el PDF en el sistema de archivos temporal
+    // Write the PDF to the temporary file system
     const filePath = path.join(__dirname, `../../../../temp/${fileName}`);
     await createPDF(products, filePath);
 
     await sendEmailWithAttachment(
       {
         toAddresses: [email],
-        subject: "Inventario de productos",
+        subject: "Product Inventory",
         source: config.aws.awsEmail
       },
       fileName
     );
 
-    // Enviar el archivo PDF como respuesta para descargar
+    // Send the PDF file as response for download
     res.download(filePath, fileName, (err) => {
       if (err) {
         console.error("Error downloading PDF:", err);
         res.status(500).json({ error: "Error downloading PDF" });
       }
-      // Eliminar el archivo PDF temporal después de descargarlo
+      // Delete the temporary PDF file after downloading
       fs.unlinkSync(filePath);
     });
   } catch (error) {

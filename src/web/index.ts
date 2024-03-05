@@ -21,12 +21,24 @@ class LoggerStream extends Stream.Writable {
 }
 
 const ws = express();
+
 ws.use(
   cors({
-    origin: config.web.appUrl,
-    credentials: true
+    origin: "*"
   })
 );
+
+// Permitir todas las peticiones para todas las rutas
+ws.use((req, res, next) => {
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
+
+ws.all("/*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 
 // Use morgan with the custom logger stream
 ws.use(morgan("dev", { stream: new LoggerStream() }));

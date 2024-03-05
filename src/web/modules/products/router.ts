@@ -33,12 +33,19 @@ router.get("/products", getInventory);
 
 /**
  * @openapi
- * /products/v1/:
+ * /products/v1/products/{id}:
  *   get:
- *     summary: Get a list of products
- *     description: Get a list of products from the database.
+ *     summary: Get a product by ID
+ *     description: Get a product from the database by its ID.
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the product
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: OK
@@ -46,19 +53,26 @@ router.get("/products", getInventory);
  *           application/json:
  *             schema:
  *               type: object
- *               description: Response object for products.
- *               example: { status: 'OK', data: [{ id: '123', name: 'Product 1' }]}
+ *               description: Response object for the requested product.
+ *               example: { status: 'OK', data: { id: '123', name: 'Product 1' }}
  */
 router.get("/products/:id", getProductById);
 
 /**
  * @openapi
- * /products/v1/enterprise/:id
+ * /products/v1/enterprise/{id}:
  *   get:
- *     summary: Get a list of products
- *     description: Get a list of products from the database.
+ *     summary: Get products by enterprise ID
+ *     description: Get products associated with a specific enterprise.
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the enterprise
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: OK
@@ -66,19 +80,35 @@ router.get("/products/:id", getProductById);
  *           application/json:
  *             schema:
  *               type: object
- *               description: Response object for products.
+ *               description: Response object for products associated with the enterprise.
  *               example: { status: 'OK', data: [{ id: '123', name: 'Product 1' }]}
  */
 router.get("/enterprise/:id", getInventoryEnterprise);
 
 /**
  * @openapi
- * /products/v1/:
- *   get:
- *     summary: Get a list of products
- *     description: Get a list of products from the database.
+ * /products/v1/products:
+ *   post:
+ *     summary: Create a new product
+ *     description: Create a new product and add it to the database.
  *     tags:
  *       - Products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the product
+ *               price:
+ *                 type: number
+ *                 description: Price of the product
+ *             required:
+ *               - name
+ *               - price
  *     responses:
  *       200:
  *         description: OK
@@ -86,19 +116,42 @@ router.get("/enterprise/:id", getInventoryEnterprise);
  *           application/json:
  *             schema:
  *               type: object
- *               description: Response object for products.
- *               example: { status: 'OK', data: [{ id: '123', name: 'Product 1' }]}
+ *               description: Response object for the created product.
+ *               example: { status: 'OK', data: { id: '123', name: 'Product 1', price: 10 }}
  */
-router.post("/", createProduct);
+router.post("/products", createProduct);
 
 /**
  * @openapi
- * /products/v1/:
- *   get:
- *     summary: Get a list of products
- *     description: Get a list of products from the database.
+ * /products/v1/products/{id}:
+ *   put:
+ *     summary: Update a product
+ *     description: Update an existing product in the database.
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the product to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: New name of the product
+ *               price:
+ *                 type: number
+ *                 description: New price of the product
+ *             required:
+ *               - name
+ *               - price
  *     responses:
  *       200:
  *         description: OK
@@ -106,19 +159,26 @@ router.post("/", createProduct);
  *           application/json:
  *             schema:
  *               type: object
- *               description: Response object for products.
- *               example: { status: 'OK', data: [{ id: '123', name: 'Product 1' }]}
+ *               description: Response object for the updated product.
+ *               example: { status: 'OK', data: { id: '123', name: 'Updated Product', price: 15 }}
  */
-router.put("/:id", updateProduct);
+router.put("/products/:id", updateProduct);
 
 /**
  * @openapi
- * /products/v1/:
- *   get:
- *     summary: Get a list of products
- *     description: Get a list of products from the database.
+ * /products/v1/products/{id}:
+ *   delete:
+ *     summary: Delete a product
+ *     description: Delete a product from the database.
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the product to delete
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: OK
@@ -126,10 +186,10 @@ router.put("/:id", updateProduct);
  *           application/json:
  *             schema:
  *               type: object
- *               description: Response object for products.
- *               example: { status: 'OK', data: [{ id: '123', name: 'Product 1' }]}
+ *               description: Response object indicating successful deletion.
+ *               example: { status: 'OK', message: 'Product deleted successfully.' }
  */
-router.delete("/:id", deleteProductById);
+router.delete("/products/:id", deleteProductById);
 
 /**
  * @openapi

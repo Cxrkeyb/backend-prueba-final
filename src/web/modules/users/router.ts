@@ -23,9 +23,8 @@ const router = express.Router();
  *                 format: email
  *               password:
  *                 type: string
- *                 format: password
  *     responses:
- *       200:
+ *       '200':
  *         description: OK
  *         content:
  *           application/json:
@@ -56,9 +55,8 @@ router.post("/register", registerUser);
  *                 format: email
  *               password:
  *                 type: string
- *                 format: password
  *     responses:
- *       200:
+ *       '200':
  *         description: OK
  *         content:
  *           application/json:
@@ -89,9 +87,8 @@ router.post("/register-admin", registerUserAdmin);
  *                 format: email
  *               password:
  *                 type: string
- *                 format: password
  *     responses:
- *       200:
+ *       '200':
  *         description: OK
  *         content:
  *           application/json:

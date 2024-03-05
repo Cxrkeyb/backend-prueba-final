@@ -5,14 +5,14 @@ import { generateFixtures } from "./controller/fixtures";
 
 const router = express.Router();
 
-// Otras rutas...
+// Other routes...
 
 /**
  * @openapi
  * /fixtures/v1/generate:
  *   get:
- *     summary: Generar datos de prueba en la base de datos.
- *     description: Genera datos de prueba y los almacena en la base de datos.
+ *     summary: Generate test data in the database.
+ *     description: Generates test data and stores it in the database.
  *     tags:
  *       - Fixtures
  *     responses:
@@ -22,8 +22,16 @@ const router = express.Router();
  *           application/json:
  *             schema:
  *               type: object
- *               description: Respuesta de generación de datos de prueba.
- *               example: { status: 'OK', message: 'Datos de prueba generados exitosamente.' }
+ *               description: Response for generating test data.
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Indicates the status of the operation.
+ *                   example: 'OK'
+ *                 message:
+ *                   type: string
+ *                   description: Additional message about the operation.
+ *                   example: 'Test data generated successfully.'
  */
 router.get("/generate", generateFixtures);
 

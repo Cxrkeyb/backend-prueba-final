@@ -10,6 +10,7 @@ import {
   UserRepo
 } from "../../../../databases/repos";
 import { Request, Response } from "express";
+import * as bcrypt from "bcrypt";
 
 export async function generateFixtures(req: Request, res: Response): Promise<void> {
   try {
@@ -18,7 +19,7 @@ export async function generateFixtures(req: Request, res: Response): Promise<voi
     const user = await UserRepo.save({
       name: "Wilson Parada",
       email: "cxrkeybwp2004@gmail.com",
-      password: "1234",
+      password: bcrypt.hashSync("1234", 10),
       type: UserType.ADMIN
     });
 
@@ -34,7 +35,7 @@ export async function generateFixtures(req: Request, res: Response): Promise<voi
     const userClient = await UserRepo.save({
       name: "Client Test",
       email: "clienttest@gmail.com",
-      password: "1234",
+      password: bcrypt.hashSync("1234", 10),
       type: UserType.USER
     });
 
@@ -74,10 +75,6 @@ export async function generateFixtures(req: Request, res: Response): Promise<voi
     // Crear productos de prueba
     const promiseProducts = [];
     for (let i = 0; i < 10; i++) {
-      const randomPriceCOP = Math.floor(Math.random() * 10000); // Generar un precio aleatorio para COP
-      const randomPriceUSD = Math.floor(Math.random() * 100); // Generar un precio aleatorio para USD
-      const productProperties = `Random property ${i}`; // Propiedad aleatoria
-
       // Seleccionar categorías aleatorias para el producto
       const randomCategories = categories
         .sort(() => Math.random() - 0.5)
@@ -86,19 +83,14 @@ export async function generateFixtures(req: Request, res: Response): Promise<voi
       const product = ProductRepo.create({
         name: `Product ${i}`,
         productCode: `P${i}`,
-        productProperties: productProperties,
-        currencies: [
-          {
-            code: "COP",
-            price: randomPriceCOP
-          },
-          {
-            code: "USD",
-            price: randomPriceUSD
-          }
-        ],
-        active: i % 2 === 0 ? true : false,
-        enterprise: enterprise // Referencia a la empresa insertada
+        productProperties: "some properties", // assuming productProperties is a string
+        currencies: {
+          USD: 10 + i, // convert to string
+          EUR: 20 + i,
+          GBP: 30 + i
+        },
+        active: i % 2 === 0, // no need for ternary operator
+        enterprise: enterprise // Assuming enterprise is correctly typed
       });
 
       product.categories = randomCategories; // Asignar categorías aleatorias al producto
